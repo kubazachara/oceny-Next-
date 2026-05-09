@@ -1,0 +1,670 @@
+<!DOCTYPE html>  <html lang="pl">    <head>    
+<meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<title>Oceny+</title>    
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">    
+<style>    
+  :root {    
+    --bg: #0d0f14;    
+    --card: #161920;    
+    --border: #252830;    
+    --accent: #7fff6e;    
+    --accent2: #ffdd57;    
+    --accent3: #ff6b6b;    
+    --text: #eef0f5;    
+    --muted: #5a5f70;    
+    --grade6: #7fff6e;    
+    --grade5: #57e9ff;    
+    --grade4: #ffdd57;    
+    --grade3: #ffaa33;    
+    --grade2: #ff7043;    
+    --grade1: #ff3d3d;    
+  }  { box-sizing: border-box; margin: 0; padding: 0; }  body {
+background: var(--bg);
+color: var(--text);
+font-family: 'Syne', sans-serif;
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: flex-start;
+padding: 30px 16px 60px;
+}
+
+/* Tło z kropkami */
+body::before {
+content: '';
+position: fixed;
+inset: 0;
+background-image: radial-gradient(circle, #ffffff08 1px, transparent 1px);
+background-size: 28px 28px;
+pointer-events: none;
+z-index: 0;
+}
+
+.app {
+position: relative;
+z-index: 1;
+width: 100%;
+max-width: 460px;
+display: flex;
+flex-direction: column;
+gap: 16px;
+}
+
+/* HEADER */
+.header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 8px 0 4px;
+animation: fadeDown 0.5s ease both;
+}
+
+.logo {
+font-size: 28px;
+font-weight: 800;
+letter-spacing: -1px;
+}
+
+.logo span {
+color: var(--accent);
+}
+
+.tag {
+font-family: 'DM Mono', monospace;
+font-size: 11px;
+background: var(--border);
+color: var(--muted);
+padding: 4px 10px;
+border-radius: 20px;
+}
+
+/* KARTA KALKULATORA */
+.card {
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: 20px;
+padding: 28px 24px;
+animation: fadeUp 0.5s ease both;
+animation-delay: 0.1s;
+}
+
+.card-title {
+font-size: 13px;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 2px;
+color: var(--muted);
+margin-bottom: 20px;
+}
+
+/* WEJŚCIE PUNKTÓW */
+.inputs-row {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 16px;
+}
+
+.input-group {
+flex: 1;
+}
+
+.input-group label {
+display: block;
+font-size: 11px;
+color: var(--muted);
+font-family: 'DM Mono', monospace;
+margin-bottom: 6px;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+.input-group input {
+width: 100%;
+background: var(--bg);
+border: 1.5px solid var(--border);
+border-radius: 12px;
+color: var(--text);
+font-family: 'DM Mono', monospace;
+font-size: 22px;
+font-weight: 500;
+padding: 12px 14px;
+text-align: center;
+transition: border-color 0.2s, box-shadow 0.2s;
+outline: none;
+-moz-appearance: textfield;
+}
+
+.input-group input::-webkit-outer-spin-button,
+.input-group input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.input-group input:focus {
+border-color: var(--accent);
+box-shadow: 0 0 0 3px #7fff6e1a;
+}
+
+.slash {
+font-size: 28px;
+color: var(--muted);
+padding-top: 20px;
+flex-shrink: 0;
+}
+
+/* SKALA */
+.scale-row {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 20px;
+}
+
+.scale-row label {
+font-size: 12px;
+color: var(--muted);
+font-family: 'DM Mono', monospace;
+text-transform: uppercase;
+letter-spacing: 1px;
+white-space: nowrap;
+}
+
+.scale-select {
+flex: 1;
+background: var(--bg);
+border: 1.5px solid var(--border);
+border-radius: 10px;
+color: var(--text);
+font-family: 'Syne', sans-serif;
+font-size: 13px;
+padding: 8px 12px;
+outline: none;
+cursor: pointer;
+transition: border-color 0.2s;
+}
+
+.scale-select:focus { border-color: var(--accent); }
+
+/* PRZYCISK */
+.btn {
+width: 100%;
+padding: 16px;
+border: none;
+border-radius: 14px;
+background: var(--accent);
+color: #0d0f14;
+font-family: 'Syne', sans-serif;
+font-size: 16px;
+font-weight: 800;
+letter-spacing: 0.5px;
+cursor: pointer;
+transition: transform 0.15s, opacity 0.15s, box-shadow 0.2s;
+position: relative;
+overflow: hidden;
+}
+
+.btn::after {
+content: '';
+position: absolute;
+inset: 0;
+background: white;
+opacity: 0;
+transition: opacity 0.15s;
+}
+
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px #7fff6e30; }
+.btn:active { transform: translateY(0); opacity: 0.85; }
+.btn:active::after { opacity: 0.08; }
+
+/* WYNIK */
+.result-card {
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: 20px;
+padding: 24px;
+display: none;
+animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.result-card.visible { display: block; }
+
+.result-top {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 18px;
+}
+
+.grade-badge {
+font-size: 64px;
+font-weight: 800;
+line-height: 1;
+transition: color 0.3s;
+}
+
+.result-meta {
+text-align: right;
+}
+
+.percent-big {
+font-family: 'DM Mono', monospace;
+font-size: 32px;
+font-weight: 500;
+line-height: 1.1;
+}
+
+.percent-label {
+font-size: 12px;
+color: var(--muted);
+font-family: 'DM Mono', monospace;
+margin-top: 2px;
+}
+
+/* PASEK PROCENTÓW */
+.bar-wrap {
+background: var(--bg);
+border-radius: 100px;
+height: 10px;
+overflow: hidden;
+margin-bottom: 18px;
+}
+
+.bar-fill {
+height: 100%;
+border-radius: 100px;
+width: 0%;
+transition: width 0.6s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+}
+
+/* SKALA WIZUALNA */
+.scale-visual {
+display: flex;
+gap: 5px;
+margin-bottom: 4px;
+}
+
+.scale-pip {
+flex: 1;
+height: 6px;
+border-radius: 100px;
+opacity: 0.25;
+transition: opacity 0.3s, background 0.3s;
+}
+
+.scale-pip.active { opacity: 1; }
+
+.scale-labels {
+display: flex;
+justify-content: space-between;
+font-family: 'DM Mono', monospace;
+font-size: 10px;
+color: var(--muted);
+margin-top: 4px;
+}
+
+/* HISTORIA */
+.history-card {
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: 20px;
+padding: 20px 24px;
+display: none;
+animation: fadeUp 0.3s ease both;
+}
+
+.history-card.visible { display: block; }
+
+.history-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 14px;
+}
+
+.history-title {
+font-size: 13px;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 2px;
+color: var(--muted);
+}
+
+.clear-btn {
+font-family: 'DM Mono', monospace;
+font-size: 11px;
+background: none;
+border: 1px solid var(--border);
+border-radius: 8px;
+color: var(--muted);
+padding: 4px 10px;
+cursor: pointer;
+transition: border-color 0.2s, color 0.2s;
+}
+
+.clear-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+
+.history-list {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.history-item {
+display: flex;
+align-items: center;
+gap: 12px;
+background: var(--bg);
+border-radius: 12px;
+padding: 10px 14px;
+animation: fadeUp 0.25s ease both;
+border: 1px solid transparent;
+}
+
+.h-grade {
+font-size: 22px;
+font-weight: 800;
+min-width: 24px;
+text-align: center;
+}
+
+.h-info {
+flex: 1;
+}
+
+.h-points {
+font-family: 'DM Mono', monospace;
+font-size: 13px;
+color: var(--text);
+}
+
+.h-scale {
+font-size: 11px;
+color: var(--muted);
+font-family: 'DM Mono', monospace;
+}
+
+.h-percent {
+font-family: 'DM Mono', monospace;
+font-size: 13px;
+color: var(--muted);
+}
+
+.empty-history {
+font-size: 13px;
+color: var(--muted);
+text-align: center;
+padding: 10px 0;
+font-family: 'DM Mono', monospace;
+}
+
+/* TABELA SKALI */
+.scale-card {
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: 20px;
+padding: 20px 24px;
+animation: fadeUp 0.5s ease both;
+animation-delay: 0.2s;
+}
+
+.scale-grid {
+display: grid;
+grid-template-columns: repeat(6, 1fr);
+gap: 8px;
+}
+
+.scale-item {
+background: var(--bg);
+border-radius: 12px;
+padding: 10px 6px;
+text-align: center;
+border: 1.5px solid transparent;
+transition: border-color 0.3s, transform 0.2s;
+}
+
+.scale-item.highlight {
+transform: scale(1.06);
+}
+
+.scale-item .si-grade {
+font-size: 20px;
+font-weight: 800;
+margin-bottom: 4px;
+}
+
+.scale-item .si-range {
+font-family: 'DM Mono', monospace;
+font-size: 9px;
+color: var(--muted);
+line-height: 1.4;
+}
+
+/* ANIMACJE */
+@keyframes fadeDown {
+from { opacity: 0; transform: translateY(-12px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(14px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+from { opacity: 0; transform: scale(0.92); }
+to   { opacity: 1; transform: scale(1); }
+}
+</style>
+
+</head>    
+<body>    
+<div class="app">    <!-- NAGŁÓWEK -->    <div class="header">    
+    <div class="logo">Oceny<span>+</span></div>    
+    <div class="tag">kalkulator ocen</div>    
+  </div>    <!-- KALKULATOR -->    <div class="card">    
+    <div class="card-title">Oblicz ocenę</div>  <div class="inputs-row">    
+  <div class="input-group">    
+    <label>Zdobyte</label>    
+    <input type="number" id="points" placeholder="0" min="0" />    
+  </div>    
+  <div class="slash">/</div>    
+  <div class="input-group">    
+    <label>Maksimum</label>    
+    <input type="number" id="maxPoints" placeholder="100" min="1" />    
+  </div>    
+</div>    <div class="scale-row">    
+  <label>Skala:</label>    
+  <select class="scale-select" id="scaleSelect" onchange="updateScaleDisplay()">    
+    <option value="standard">Standardowa (szkoła PL)</option>    
+    <option value="strict">Surowa (próg 50%)</option>    
+    <option value="easy">Łagodna (próg 25%)</option>    
+  </select>    
+</div>    <button class="btn" onclick="calculateGrade()">Oblicz ocenę →</button>
+
+  </div>    <!-- WYNIK -->    <div class="result-card" id="resultCard">    
+    <div class="result-top">    
+      <div class="grade-badge" id="gradeBadge">—</div>    
+      <div class="result-meta">    
+        <div class="percent-big" id="percentBig">—</div>    
+        <div class="percent-label" id="ptLabel">— / — pkt</div>    
+      </div>    
+    </div>  <div class="bar-wrap">    
+  <div class="bar-fill" id="barFill"></div>    
+</div>    <div class="scale-visual" id="scaleVisual"></div>    
+<div class="scale-labels">    
+  <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>    
+</div>    </div>    <!-- HISTORIA -->    <div class="history-card" id="historyCard">    
+    <div class="history-header">    
+      <div class="history-title">Historia</div>    
+      <button class="clear-btn" onclick="clearHistory()">Wyczyść</button>    
+    </div>    
+    <div class="history-list" id="historyList"></div>    
+  </div>    <!-- TABELA SKALI -->    <div class="scale-card">    
+    <div class="card-title" style="margin-bottom:14px">Skala oceniania</div>    
+    <div class="scale-grid" id="scaleGrid"></div>    
+  </div>  </div>  <script>    
+// SKALE OCENIANIA    
+const scales = {    
+  standard: {    
+    name: "Standardowa",    
+    grades: [    
+      { min: 100, max: 100, grade: "6", color: "var(--grade6)" },    
+      { min: 91,  max: 99,  grade: "5", color: "var(--grade5)" },    
+      { min: 76,  max: 90,  grade: "4", color: "var(--grade4)" },    
+      { min: 51,  max: 75,  grade: "3", color: "var(--grade3)" },    
+      { min: 30,  max: 50,  grade: "2", color: "var(--grade2)" },    
+      { min: 0,   max: 29,  grade: "1", color: "var(--grade1)" }    
+    ]    
+  },    
+  strict: {    
+    name: "Surowa",    
+    grades: [    
+      { min: 100, max: 100, grade: "6", color: "var(--grade6)" },    
+      { min: 90,  max: 99,  grade: "5", color: "var(--grade5)" },    
+      { min: 75,  max: 89,  grade: "4", color: "var(--grade4)" },    
+      { min: 60,  max: 74,  grade: "3", color: "var(--grade3)" },    
+      { min: 50,  max: 59,  grade: "2", color: "var(--grade2)" },    
+      { min: 0,   max: 49,  grade: "1", color: "var(--grade1)" }    
+    ]    
+  },    
+  easy: {    
+    name: "Łagodna",    
+    grades: [    
+      { min: 100, max: 100, grade: "6", color: "var(--grade6)" },    
+      { min: 85,  max: 99,  grade: "5", color: "var(--grade5)" },    
+      { min: 65,  max: 84,  grade: "4", color: "var(--grade4)" },    
+      { min: 45,  max: 64,  grade: "3", color: "var(--grade3)" },    
+      { min: 25,  max: 44,  grade: "2", color: "var(--grade2)" },    
+      { min: 0,   max: 24,  grade: "1", color: "var(--grade1)" }    
+    ]    
+  }    
+};    let history = JSON.parse(localStorage.getItem('gradesHistory') || '[]');
+
+function getScale() {
+return scales[document.getElementById('scaleSelect').value];
+}
+
+function getGradeObj(percent) {
+return getScale().grades.find(g => percent >= g.min && percent <= g.max) || null;
+}
+
+function updateScaleDisplay() {
+const scale = getScale();
+const grid = document.getElementById('scaleGrid');
+grid.innerHTML = scale.grades.map(g =>     <div class="scale-item" id="pip-${g.grade}" style="border-color: transparent">     <div class="si-grade" style="color:${g.color}">${g.grade}</div>     <div class="si-range">${g.min === g.max ? g.min + '%' : g.min + '–' + g.max + '%'}</div>     </div>    ).join('');
+}
+
+function calculateGrade() {
+const points = parseFloat(document.getElementById('points').value);
+const maxPoints = parseFloat(document.getElementById('maxPoints').value);
+
+if (isNaN(points) || isNaN(maxPoints) || maxPoints <= 0 || points < 0) {
+shakeCard();
+return;
+}
+
+const clampedPoints = Math.min(points, maxPoints);
+const percent = (clampedPoints / maxPoints) * 100;
+const gradeObj = getGradeObj(percent);
+
+if (!gradeObj) return;
+
+// Aktualizuj wynik
+const badge = document.getElementById('gradeBadge');
+const percentBig = document.getElementById('percentBig');
+const ptLabel = document.getElementById('ptLabel');
+const barFill = document.getElementById('barFill');
+const resultCard = document.getElementById('resultCard');
+
+badge.textContent = gradeObj.grade;
+badge.style.color = gradeObj.color;
+percentBig.textContent = percent.toFixed(1) + '%';
+percentBig.style.color = gradeObj.color;
+ptLabel.textContent = ${clampedPoints} / ${maxPoints} pkt;
+
+barFill.style.background = gradeObj.color;
+setTimeout(() => { barFill.style.width = Math.min(percent, 100) + '%'; }, 50);
+
+resultCard.classList.add('visible');
+
+// Skala wizualna (kółka)
+const visual = document.getElementById('scaleVisual');
+const scale = getScale();
+visual.innerHTML = scale.grades.slice().reverse().map((g, i) => {
+const isActive = g.grade === gradeObj.grade;
+return <div class="scale-pip ${isActive ? 'active' : ''}" style="background:${g.color}"></div>;
+}).join('');
+
+// Podświetl w tabeli
+scale.grades.forEach(g => {
+const el = document.getElementById('pip-' + g.grade);
+if (el) {
+el.style.borderColor = 'transparent';
+el.classList.remove('highlight');
+}
+});
+const activePip = document.getElementById('pip-' + gradeObj.grade);
+if (activePip) {
+activePip.style.borderColor = gradeObj.color;
+activePip.classList.add('highlight');
+}
+
+// Zapisz do historii
+const scaleName = document.getElementById('scaleSelect').value;
+const entry = {
+grade: gradeObj.grade,
+color: gradeObj.color,
+points: clampedPoints,
+maxPoints,
+percent: percent.toFixed(1),
+scale: scaleName,
+time: new Date().toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })
+};
+
+history.unshift(entry);
+if (history.length > 12) history = history.slice(0, 12);
+localStorage.setItem('gradesHistory', JSON.stringify(history));
+renderHistory();
+}
+
+function renderHistory() {
+const list = document.getElementById('historyList');
+const card = document.getElementById('historyCard');
+
+if (history.length === 0) {
+card.classList.remove('visible');
+return;
+}
+
+card.classList.add('visible');
+list.innerHTML = history.map((e, i) =>     <div class="history-item" style="animation-delay:${i * 0.04}s">     <div class="h-grade" style="color:${e.color}">${e.grade}</div>     <div class="h-info">     <div class="h-points">${e.points} / ${e.maxPoints} pkt</div>     <div class="h-scale">${e.time} · ${scales[e.scale]?.name || e.scale}</div>     </div>     <div class="h-percent">${e.percent}%</div>     </div>    ).join('');
+}
+
+function clearHistory() {
+history = [];
+localStorage.removeItem('gradesHistory');
+renderHistory();
+}
+
+function shakeCard() {
+const card = document.querySelector('.card');
+card.style.animation = 'none';
+card.offsetHeight;
+card.style.animation = 'shake 0.4s ease';
+}
+
+// Wstrzyknij animację shake
+const style = document.createElement('style');
+style.textContent =     @keyframes shake {     0%,100% { transform: translateX(0); }     20% { transform: translateX(-8px); }     40% { transform: translateX(8px); }     60% { transform: translateX(-5px); }     80% { transform: translateX(5px); }     }    ;
+document.head.appendChild(style);
+
+// Enter = oblicz
+document.addEventListener('keydown', e => {
+if (e.key === 'Enter') calculateGrade();
+});
+
+// Start
+updateScaleDisplay();
+renderHistory();
+</script>  </body>
+
+  </html>
